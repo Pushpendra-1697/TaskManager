@@ -5,9 +5,9 @@ import { backend_url } from '../../Pages/BackendURL';
 export const getBugs = (page) => async (dispatch) => {
     dispatch({ type: BUG_LOADING });
     try {
-        let res = await axios.get(`${backend_url}/dashboard/?page=` + page, {
+        let res = await axios.get(`${backend_url}/dashboard/`, {
             headers: {
-                authentication: localStorage.getItem('token')
+                token: localStorage.getItem('token')
             }
         });
         dispatch({ type: BUG_SUCCESS, payload: res.data });
@@ -19,7 +19,7 @@ export const getBugs = (page) => async (dispatch) => {
 export const addBug = (message) => async (dispatch) => {
     dispatch({ type: BUG_LOADING });
     try {
-        let res = await axios.post(`${backend_url}/dashboard/post`, message, { headers: { authentication: localStorage.getItem('token') } });
+        let res = await axios.post(`${backend_url}/dashboard/post`, message, { headers: { token: localStorage.getItem('token') } });
         dispatch({ type: ADD_BUG, payload: res.data });
     } catch (e) {
         dispatch({ type: BUG_ERROR, payload: e.message });
@@ -31,7 +31,7 @@ export const updateBug = (id, changes) => async (dispatch) => {
     try {
         let res = await axios.patch(`${backend_url}/dashboard/patch/${id}`, {
             ...changes
-        }, { headers: { authentication: localStorage.getItem('token') } });
+        }, { headers: { token: localStorage.getItem('token') } });
         dispatch({ type: UPDATE_BUG, payload: res.data });
     } catch (e) {
         dispatch({ type: BUG_ERROR, payload: e.message });
@@ -42,7 +42,7 @@ export const deletebug = (id) => async (dispatch) => {
     dispatch({ type: BUG_LOADING });
     try {
         let res = await axios.delete(`${backend_url}/dashboard/delete/${id}`, {
-            headers: { authentication: localStorage.getItem('token') }
+            headers: { token: localStorage.getItem('token') }
         });
         dispatch({ type: REMOVE_BUG, payload: res.data._id });
     } catch (e) {

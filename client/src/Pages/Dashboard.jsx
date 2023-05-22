@@ -1,13 +1,41 @@
-import { Box, Button, Heading, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure } from '@chakra-ui/react';
-import { useState } from 'react';
+import { Alert, AlertIcon, Box, Button, Heading, Input, List, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom'
-import { addBug } from '../redux/BugTracker/bug.action';
-import { useDispatch } from 'react-redux';
+import { addBug, getBugs } from '../redux/BugTracker/bug.action';
+import { useDispatch, useSelector } from 'react-redux';
+import { BiLoaderCircle } from "react-icons/bi";
+import ItemCard from '../Component/ItemCard';
+import { useDrop } from 'react-dnd';
 
 const Dashboard = () => {
   const [name, setTaskName] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const dispatch = useDispatch();
+  const [team, setTeam] = useState([]);
+  const { bugs, error, loading } = useSelector((store) => store.bugManager);
+  const [player, setPlayer] = useState([]);
+
+  // [
+  //   { _id: '646b77bd386a2dc20bf44ef2', name: 'Task-1', userId: '646b76317489cf3f4c6aa76f' },
+  //   { _id: '646b77fa27d0b7ead85f54e6', name: 'Task-2', userId: '646b76317489cf3f4c6aa76f' },
+  //   { _id: '646b780027d0b7ead85f54e8', name: 'Task-3', userId: '646b76317489cf3f4c6aa76f' }
+  // ]
+
+  const [{ isOver }, addToTeamRef] = useDrop({
+    accept: 'player',
+    collect: (monitor) => ({ isOver: !!monitor.isOver() })
+  });
+  const [{ isOver: isPlayerOver }, removeFromTeamRef] = useDrop({
+    accept: 'team',
+    collect: (monitor) => ({ isOver: !!monitor.isOver() })
+  });
+
+  // console.log(player)
+
+
+  useEffect(() => {
+    dispatch(getBugs());
+  }, []);
 
 
   const handleSubmit = () => {
@@ -15,25 +43,60 @@ const Dashboard = () => {
     setTaskName('');
   };
 
+  const movePlayerToTeam = (item) => {
+    setPlayer((prev) => prev.filter((_, i) => i !== item.index));
+    setTeam((prev) => [...prev, item]);
+  };
+  const RemovePlayerFromTeam = (item) => {
+    setTeam((prev) => prev.filter((_, i) => i !== item.index));
+    setPlayer((prev) => [...prev, item]);
+  };
 
   if (localStorage.getItem('token') === null) {
     return <Navigate to='/login' />
   };
   return (
     <>
-      <Box display={'grid'} gridTemplateColumns={"repeat(4,1fr)"} w='90%' m='auto' gap={'2%'}>
+      {loading && (
+        <Box display={"flex"} justifyContent="center" alignItems={"center"}>
+          {" "}
+          <BiLoaderCircle fontSize={"34px"} />{" "}
+        </Box>
+      )}
+      {error && <Box display={"flex"} justifyContent="center" alignItems={"center"}>
+        <Alert status='error' w="300px" >
+          <AlertIcon />
+          {`Something went Wrong`}
+        </Alert>
+      </Box>}
 
-        <Box bg='aliceblue' boxShadow="rgba(0, 0, 0, 0.35) 0px 5px 15px" border={'1px solid black'} >
+      <Box display={'grid'} gridTemplateColumns={["repeat(1,1fr)", "repeat(1,1fr)", "repeat(3,1fr)"]} w='90%' m='auto' gap={'2%'}>
+
+        <Box overflow={'scroll'} bg='aliceblue' boxShadow="rgba(0, 0, 0, 0.35) 0px 5px 15px" border={'1px solid black'} >
           <Heading textAlign={'center'} padding={'3px'} bg='blackAlpha.100' fontSize={'22px'}>List 1</Heading>
+          <List ref={removeFromTeamRef} p='4' minH={'70vh'} boxShadow={'xl'} borderRadius={'md'} bgGradient={
+            isPlayerOver ? 'linear(to-b, yellow.300, yellow.500)' : "linear(to-b, yellow.100, yellow.200)"
+          }>
+            {bugs && bugs.map((ele, index) =>
+              <ItemCard key={ele._id} item={ele} type={"player"} index={index} onDropPlayer={movePlayerToTeam} />
+            )}
+          </List>
         </Box>
 
-        <Box bg='aliceblue' boxShadow="rgba(0, 0, 0, 0.35) 0px 5px 15px" border={'1px solid black'}>
+
+        <Box overflow={'scroll'} bg='aliceblue' boxShadow="rgba(0, 0, 0, 0.35) 0px 5px 15px" border={'1px solid black'}>
           <Heading bg='blackAlpha.100' textAlign={'center'} padding={'3px'} fontSize={'22px'}>List 2</Heading>
+          <List p='4' minH={'70vh'} boxShadow={'xl'} borderRadius={'md'} ref={addToTeamRef} bgGradient={
+            isOver ? 'linear(to-b, teal.300, teal.500)' : "linear(to-b, teal.100, teal.200)"
+          }>
+            {team && team.map((ele, index) =>
+              <ItemCard key={ele._id} item={ele} type={"team"} index={index} onDropPlayer={RemovePlayerFromTeam} />
+            )}
+          </List>
         </Box>
 
-        <Box bg='aliceblue' boxShadow="rgba(0, 0, 0, 0.35) 0px 5px 15px" border={'1px solid black'}>
-          <Heading bg='blackAlpha.100' textAlign={'center'} padding={'3px'} fontSize={'22px'}>List 3</Heading>
-        </Box>
+
+
 
         <Box bg='aliceblue' boxShadow="rgba(0, 0, 0, 0.35) 0px 5px 15px" border={'1px solid black'}>
           <Heading bg='blackAlpha.100' textAlign={'center'} padding={'3px'} fontSize={'22px'}>Create New List</Heading>
