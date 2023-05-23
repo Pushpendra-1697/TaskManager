@@ -15,12 +15,6 @@ const Dashboard = () => {
   const { bugs, error, loading } = useSelector((store) => store.bugManager);
   const [player, setPlayer] = useState([]);
 
-  // [
-  //   { _id: '646b77bd386a2dc20bf44ef2', name: 'Task-1', userId: '646b76317489cf3f4c6aa76f' },
-  //   { _id: '646b77fa27d0b7ead85f54e6', name: 'Task-2', userId: '646b76317489cf3f4c6aa76f' },
-  //   { _id: '646b780027d0b7ead85f54e8', name: 'Task-3', userId: '646b76317489cf3f4c6aa76f' }
-  // ]
-
   const [{ isOver }, addToTeamRef] = useDrop({
     accept: 'player',
     collect: (monitor) => ({ isOver: !!monitor.isOver() })
@@ -44,6 +38,7 @@ const Dashboard = () => {
   };
 
   const movePlayerToTeam = (item) => {
+    // console.log(item)
     setPlayer((prev) => prev.filter((_, i) => i !== item.index));
     setTeam((prev) => [...prev, item]);
   };
@@ -72,9 +67,9 @@ const Dashboard = () => {
 
       <Box display={'grid'} gridTemplateColumns={["repeat(1,1fr)", "repeat(1,1fr)", "repeat(3,1fr)"]} w='90%' m='auto' gap={'2%'}>
 
-        <Box overflow={'scroll'} bg='aliceblue' boxShadow="rgba(0, 0, 0, 0.35) 0px 5px 15px" border={'1px solid black'} >
+        <Box bg='aliceblue' boxShadow="rgba(0, 0, 0, 0.35) 0px 5px 15px" border={'1px solid black'} >
           <Heading textAlign={'center'} padding={'3px'} bg='blackAlpha.100' fontSize={'22px'}>List 1</Heading>
-          <List ref={removeFromTeamRef} p='4' minH={'70vh'} boxShadow={'xl'} borderRadius={'md'} bgGradient={
+          <List overflow={'scroll'} height={'500px'} ref={removeFromTeamRef} p='4' minH={'70vh'} boxShadow={'xl'} borderRadius={'md'} bgGradient={
             isPlayerOver ? 'linear(to-b, yellow.300, yellow.500)' : "linear(to-b, yellow.100, yellow.200)"
           }>
             {bugs && bugs.map((ele, index) =>
@@ -84,9 +79,9 @@ const Dashboard = () => {
         </Box>
 
 
-        <Box overflow={'scroll'} bg='aliceblue' boxShadow="rgba(0, 0, 0, 0.35) 0px 5px 15px" border={'1px solid black'}>
+        <Box bg='aliceblue' boxShadow="rgba(0, 0, 0, 0.35) 0px 5px 15px" border={'1px solid black'}>
           <Heading bg='blackAlpha.100' textAlign={'center'} padding={'3px'} fontSize={'22px'}>List 2</Heading>
-          <List p='4' minH={'70vh'} boxShadow={'xl'} borderRadius={'md'} ref={addToTeamRef} bgGradient={
+          <List overflow={'scroll'} height={'500px'} p='4' minH={'70vh'} boxShadow={'xl'} borderRadius={'md'} ref={addToTeamRef} bgGradient={
             isOver ? 'linear(to-b, teal.300, teal.500)' : "linear(to-b, teal.100, teal.200)"
           }>
             {team && team.map((ele, index) =>
@@ -94,8 +89,6 @@ const Dashboard = () => {
             )}
           </List>
         </Box>
-
-
 
 
         <Box bg='aliceblue' boxShadow="rgba(0, 0, 0, 0.35) 0px 5px 15px" border={'1px solid black'}>
