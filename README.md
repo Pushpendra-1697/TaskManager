@@ -1,6 +1,6 @@
 # TaskManager
 # Overview
-this project combines the powerful drag and drop functionality provided by the React DnD library with a secure authentication system. It aims to create an interactive and personalized experience for users while maintaining the necessary security measures to protect sensitive data and ensure appropriate access control.
+This project combines the powerful drag and drop functionality provided by the React DnD library with a secure authentication system. It aims to create an interactive and personalized experience for users while maintaining the necessary security measures to protect sensitive data and ensure appropriate access control.
 
 # Frontend Verecel Deployed Link :
 https://ascend-nu.vercel.app/
